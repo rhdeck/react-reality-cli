@@ -1,0 +1,34 @@
+{
+  "name": "react-reality-cli",
+  "version": "1.0.0",
+  "description": "Command Line utility for react-reality",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rhdeck/react-reality-cli.git"
+  },
+  "keywords": [
+    "arkit",
+    "ar",
+    "react",
+    "react-native"
+  ],
+  "author": "Ray Deck",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/rhdeck/react-reality-cli/issues"
+  },
+  "homepage": "https://github.com/rhdeck/react-reality-cli#readme",
+  "bin": {
+    "react-reality": "./cli.js",
+    "rr": "./cli.js"
+  },
+  "dependencies": {
+    "commander": "^2.15.1",
+    "minimist": "^1.2.0",
+    "react-native-cli": "^2.0.1"
+  }
+}
