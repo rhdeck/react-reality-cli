@@ -21,7 +21,7 @@ commander
   .command("init <projectname>")
   .description("Start a new react-reality application")
   .option(
-    "-t --template",
+    "-t --template <template>",
     "Template to apply (core templates include base, holokit)"
   )
   .action((projectname, opts) => {
@@ -34,7 +34,7 @@ commander
         "package.json"
       );
     };
-    const template = opts.template || "base";
+    const template = opts.template ? opts.template : "base";
     //See if template has a path
     var fullTemplate = "";
     if (template.indexOf("//") > -1) {
