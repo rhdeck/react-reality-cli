@@ -8,7 +8,7 @@ Command line interface for [react-reality](https://github.com/rhdeck/react-reali
 yarn global add react-reality-cli
 ```
 
-or
+**or**
 
 ```bash
 npm i g react-reality-cli
