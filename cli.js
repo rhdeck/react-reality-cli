@@ -3,6 +3,7 @@ const commander = require("commander");
 const Path = require("path");
 const fs = require("fs");
 const cp = require("child_process");
+const copy = require("recursive-copy");
 var CLI_MODULE_PATH = function() {
   return Path.resolve(process.cwd(), "node_modules", "react-native", "cli.js");
 };
@@ -20,7 +21,7 @@ if (fs.existsSync(cliPath)) {
       "-t --template <template>",
       "Additional React Reality Template to apply (core templates include compass, holokit)"
     )
-    .action((projectname, opts) => {
+    .action(async (projectname, opts) => {
       const originalPath = process.cwd();
 
       //Look for react-native in this subdirectory
@@ -57,6 +58,7 @@ if (fs.existsSync(cliPath)) {
       const projectPath = Path.join(originalPath, projectname);
 
       if (opts.template) {
+        var templateName;
         //See if a template is spcified
         const template = opts.template;
         //See if template has a path
@@ -64,32 +66,73 @@ if (fs.existsSync(cliPath)) {
         if (template.indexOf("//") > -1) {
           //This is a url, let it through
           fullTemplate = template;
+          templateName = template.substr(template.lastIndexOf("/") + 1);
         } else if (template.indexOf("/") === 0) {
           //This is a filepath
           fullTemplate = "file://" + template;
+          templateName = template.substr(template.lastIndexOf("/") + 1);
         } else if (template.indexOf("/") > 0) {
           if (template.indexOf("@") === 0) {
             //This is a namespaced package - let it through
+            templateName = template;
           } else {
             //This is a qualified github name
             fullTemplate = "https://github.com/" + template;
+            templateName = template.substr(template.lastIndexOf("/") + 1);
           }
         } else {
-          fullTemplate =
-            "file:///Users/ray/Documents/react-reality-template-" + template;
-          //        "https://github.com/rhdeck/react-reality-template-" + template;
-          // "react-reality-template-" + template
+          templateName = "react-reality-template-" + template;
+          // fullTemplate = "file:///Users/ray/Documents/" + templateName;
+          "https://github.com/rhdeck/" + templateName;
+          // templateName
         }
-        if (fullTemplate.length) {
-          //Do things
-          console.log("I was supposed to add template", fullTemplate);
-          //process.exit();
-          //change directory
+        if (fullTemplate.length && templateName.length) {
           process.chdir(projectPath);
-          //Add the
+          cp.spawnSync("yarn", ["add", fullTemplate, "--ignore-scripts"], {
+            stdio: "inherit"
+          });
+          var doLink = false;
+          const templateDir = Path.join(
+            projectPath,
+            "node_modules",
+            templateName
+          );
+          if (fs.existsSync(templateDir)) {
+            console.log("I will copy from", templateDir, "to ", projectPath);
+            await copy(templateDir, projectPath, {
+              filter: ["**/*", "!package.json", "!dependencies.json"],
+              dot: false,
+              overwrite: true
+            });
+            var dpath = Path.join(templateDir, "dependencies.json");
 
-          // const args = ["init", projectname, "--template", fullTemplate];
-          // cp.spawnSync(command, args, { stdio: "inherit" });
+            if (fs.existsSync(dpath)) {
+              const deps = require(dpath);
+              Object.keys(deps).forEach(key => {
+                const v = deps[key];
+                const arg = key + "@" + v;
+                cp.spawnSync("yarn", ["add", arg], { stdio: "inherit" });
+                doLink = true;
+              });
+            }
+            if (doLink) {
+              cp.spawnSync(command, ["linknopod"], { stdio: "inherit" });
+            }
+            cp.spawnSync("yarn", ["remove", templateName]);
+          } else {
+            console.log(
+              "Was not able to install template",
+              template,
+              " from url ",
+              fullTemplate,
+              "to node_modules/" + templateName
+            );
+            console.log(
+              "Continuing with installing",
+              projectname,
+              "as a base template"
+            );
+          }
         }
       }
       process.chdir(projectPath);
@@ -100,8 +143,7 @@ if (fs.existsSync(cliPath)) {
       console.log("cd " + projectname);
       console.log("react-reality run-ios --device");
       console.log("code .");
-      process.exit();
     });
   commander.parse(process.argv);
-  console.log('Try "react-reality --help" for help');
+  if (!process.argv[2]) console.log('Try "react-reality --help" for help');
 }
