@@ -1,6 +1,6 @@
 # react-reality-cli
 
-Command line interface for react-reality projects
+Command line interface for [react-reality](https://github.com/rhdeck/react-reality) projects
 
 # Installation
 
