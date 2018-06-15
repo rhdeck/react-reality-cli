@@ -28,6 +28,7 @@
   },
   "dependencies": {
     "commander": "^2.15.1",
-    "react-native-cli": "^2.0.1"
+    "react-native-cli": "^2.0.1",
+    "recursive-copy": "^2.0.9"
   }
 }
