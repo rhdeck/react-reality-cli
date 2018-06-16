@@ -5,13 +5,13 @@ Command line interface for [react-reality](https://github.com/rhdeck/react-reali
 # Installation
 
 ```bash
-yarn global add react-reality-cli
+yarn global add rhdeck/react-reality-cli
 ```
 
 **or**
 
 ```bash
-npm i g react-reality-cli
+npm i g rhdeck/react-reality-cli
 ```
 
 # Usage
